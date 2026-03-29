@@ -1,30 +1,45 @@
-import React, { useState } from 'react';
+import React, { createContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+const ThemeProvider = createContext();
 
 export default function App() {
-  const [screen, setScreen] = useState('login');
+  const [currentView, setCurrentView] = useState('login');
+  const [isDark, setIsDark] = useState(false);
+
+  const colors = {
+    bg: isDark ? '#1a202c' : '#f7fafc',
+    card: isDark ? '#2d3748' : '#ffffff',
+    text: isDark ? '#edf2f7' : '#2d3748',
+    input: isDark ? '#4a5568' : '#edf2f7',
+    primary: '#4a90e2',
+  };
+
+  const toggleMode = () => setIsDark(!isDark);
 
   const LoginView = () => {
     const { control, handleSubmit } = useForm();
     return (
-      <View style={styles.card}>
-        <Text style={styles.header}>Sign In</Text>
+      <View style={[styles.box, { backgroundColor: colors.card }]}>
+        <Text style={[styles.header, { color: colors.text }]}>Member Login</Text>
         <Controller control={control} name="email" rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
-            <TextInput style={styles.field} placeholder="Email" onChangeText={onChange} value={value} />
+            <TextInput style={[styles.inputField, { backgroundColor: colors.input, color: colors.text }]} 
+              placeholder="Email" onChangeText={onChange} value={value} placeholderTextColor="#a0aec0" />
           )}
         />
         <Controller control={control} name="password" rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
-            <TextInput style={styles.field} placeholder="Password" secureTextEntry onChangeText={onChange} value={value} />
+            <TextInput style={[styles.inputField, { backgroundColor: colors.input, color: colors.text }]} 
+              placeholder="Password" secureTextEntry onChangeText={onChange} value={value} placeholderTextColor="#a0aec0" />
           )}
         />
-        <TouchableOpacity style={styles.actionBtn} onPress={handleSubmit(() => setScreen('home'))}>
-          <Text style={styles.btnLabel}>LOG IN</Text>
+        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.primary }]} onPress={handleSubmit(() => setCurrentView('home'))}>
+          <Text style={styles.btnText}>SIGN IN</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setScreen('register')}>
-          <Text style={styles.switchText}>New here? Register</Text>
+        <TouchableOpacity onPress={() => setCurrentView('register')}>
+          <Text style={[styles.link, { color: colors.primary }]}>Create an account</Text>
         </TouchableOpacity>
       </View>
     );
@@ -33,30 +48,29 @@ export default function App() {
   const RegisterView = () => {
     const { control, handleSubmit, watch } = useForm();
     const pwd = watch("password");
-
     return (
-      <View style={styles.card}>
-        <Text style={styles.header}>Register</Text>
+      <View style={[styles.box, { backgroundColor: colors.card }]}>
+        <Text style={[styles.header, { color: colors.text }]}>New Account</Text>
         <Controller control={control} name="email" rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
-            <TextInput style={styles.field} placeholder="Email" onChangeText={onChange} value={value} />
+            <TextInput style={[styles.inputField, { backgroundColor: colors.input, color: colors.text }]} placeholder="Email" onChangeText={onChange} value={value} />
           )}
         />
         <Controller control={control} name="password" rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
-            <TextInput style={styles.field} placeholder="Password" secureTextEntry onChangeText={onChange} value={value} />
+            <TextInput style={[styles.inputField, { backgroundColor: colors.input, color: colors.text }]} placeholder="Password" secureTextEntry onChangeText={onChange} value={value} />
           )}
         />
-        <Controller control={control} name="confirm" rules={{ validate: v => v === pwd || "No match" }}
+        <Controller control={control} name="confirm" rules={{ validate: v => v === pwd }}
           render={({ field: { onChange, value } }) => (
-            <TextInput style={styles.field} placeholder="Confirm Password" secureTextEntry onChangeText={onChange} value={value} />
+            <TextInput style={[styles.inputField, { backgroundColor: colors.input, color: colors.text }]} placeholder="Confirm Password" secureTextEntry onChangeText={onChange} value={value} />
           )}
         />
-        <TouchableOpacity style={styles.actionBtn} onPress={handleSubmit(() => setScreen('setup'))}>
-          <Text style={styles.btnLabel}>CREATE ACCOUNT</Text>
+        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.primary }]} onPress={handleSubmit(() => setCurrentView('setup'))}>
+          <Text style={styles.btnText}>REGISTER</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setScreen('login')}>
-          <Text style={styles.switchText}>Back to Login</Text>
+        <TouchableOpacity onPress={() => setCurrentView('login')}>
+          <Text style={[styles.link, { color: colors.primary }]}>Back to login</Text>
         </TouchableOpacity>
       </View>
     );
@@ -65,55 +79,60 @@ export default function App() {
   const SetupView = () => {
     const { control, handleSubmit } = useForm();
     return (
-      <View style={styles.card}>
-        <Text style={styles.header}>Setup Profile</Text>
-        <TextInput style={styles.field} placeholder="Photo URL" />
-        <Controller control={control} name="fName" rules={{ required: true }}
+      <View style={[styles.box, { backgroundColor: colors.card }]}>
+        <Text style={[styles.header, { color: colors.text }]}>Setup Profile</Text>
+        <Controller control={control} name="firstName" rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
-            <TextInput style={styles.field} placeholder="First Name" onChangeText={onChange} value={value} />
+            <TextInput style={[styles.inputField, { backgroundColor: colors.input, color: colors.text }]} placeholder="First Name" onChangeText={onChange} value={value} />
           )}
         />
-        <Controller control={control} name="lName" rules={{ required: true }}
+        <Controller control={control} name="lastName" rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
-            <TextInput style={styles.field} placeholder="Last Name" onChangeText={onChange} value={value} />
+            <TextInput style={[styles.inputField, { backgroundColor: colors.input, color: colors.text }]} placeholder="Last Name" onChangeText={onChange} value={value} />
           )}
         />
-        <TouchableOpacity style={styles.actionBtn} onPress={handleSubmit(() => setScreen('home'))}>
-          <Text style={styles.btnLabel}>FINISH SETUP</Text>
+        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.primary }]} onPress={handleSubmit(() => setCurrentView('home'))}>
+          <Text style={styles.btnText}>COMPLETE</Text>
         </TouchableOpacity>
       </View>
     );
   };
 
   const HomeView = () => (
-    <View style={styles.card}>
-      <Text style={styles.header}>Homepage</Text>
-      <Text style={{ textAlign: 'center', marginBottom: 30 }}>You have successfully logged in!</Text>
-      <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#333' }]} onPress={() => setScreen('login')}>
-        <Text style={styles.btnLabel}>LOGOUT</Text>
+    <View style={[styles.box, { backgroundColor: colors.card }]}>
+      <Text style={[styles.header, { color: colors.text }]}>Welcome Home</Text>
+      <View style={styles.switchContainer}>
+        <Text style={{ color: colors.text }}>Theme: {isDark ? 'Dark' : 'Light'}</Text>
+        <Switch value={isDark} onValueChange={toggleMode} thumbColor={colors.primary} />
+      </View>
+      <TouchableOpacity style={styles.logoutBtn} onPress={() => setCurrentView('login')}>
+        <Text style={styles.btnText}>LOGOUT</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.mainContainer}>
-      <ScrollView contentContainerStyle={styles.scrollArea}>
-        {screen === 'login' && <LoginView />}
-        {screen === 'register' && <RegisterView />}
-        {screen === 'setup' && <SetupView />}
-        {screen === 'home' && <HomeView />}
-      </ScrollView>
-    </SafeAreaView>
+    <ThemeProvider.Provider value={{ isDark, toggleMode }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+        <ScrollView contentContainerStyle={styles.container}>
+          {currentView === 'login' && <LoginView />}
+          {currentView === 'register' && <RegisterView />}
+          {currentView === 'setup' && <SetupView />}
+          {currentView === 'home' && <HomeView />}
+        </ScrollView>
+      </SafeAreaView>
+    </ThemeProvider.Provider>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: { flex: 1, backgroundColor: '#fff8f0' },
-  scrollArea: { flexGrow: 1, justifyContent: 'center', padding: 25 },
-  card: { backgroundColor: '#fff', padding: 25, borderRadius: 12, elevation: 5 },
-  header: { fontSize: 24, fontWeight: 'bold', color: '#f57c00', marginBottom: 20, textAlign: 'center' },
-  field: { borderBottomWidth: 1.5, borderBottomColor: '#ffb74d', padding: 10, marginBottom: 15, fontSize: 16 },
-  actionBtn: { backgroundColor: '#fb8c00', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 10 },
-  btnLabel: { color: '#fff', fontWeight: 'bold' },
-  switchText: { color: '#ef6c00', marginTop: 20, textAlign: 'center' }
+  container: { flexGrow: 1, justifyContent: 'center', padding: 20 },
+  box: { padding: 30, borderRadius: 20, elevation: 8, shadowColor: '#000' },
+  header: { fontSize: 24, fontWeight: 'bold', marginBottom: 25, textAlign: 'center' },
+  inputField: { padding: 15, borderRadius: 12, marginBottom: 15, fontSize: 16 },
+  actionBtn: { padding: 16, borderRadius: 12, alignItems: 'center', marginTop: 10 },
+  btnText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  link: { marginTop: 20, textAlign: 'center', fontWeight: '600' },
+  switchContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 30 },
+  logoutBtn: { backgroundColor: '#e53e3e', padding: 15, borderRadius: 12, alignItems: 'center' }
 });
